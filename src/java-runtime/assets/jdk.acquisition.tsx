@@ -18,8 +18,16 @@ export const JdkAcquisitionPanel = (props: JdkAcquisitionPanelProps) => {
       <div className="row mb-3">
         <div className="col">
           <h3 className="font-weight-light">Configure</h3>
+          <ul>
+            <li>
+              Java Language Server (<b>LS</b>): requires Java Development Kit (JDK) 11 or later to launch.
+            </li>
+            <li>
+              <b>Project</b>: JDK used in your project, it can be different or managed by tools like Maven.
+            </li>
+          </ul>
           <p>
-            Java Development Kit (JDK) 11 or later is required for developing Java applications. The path to the JDK is searched in the following order:
+            JDKs are listed below, you can switch in corresponding columns:
           </p>
           <div className="card">
             <div className="card-body">

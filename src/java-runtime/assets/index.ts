@@ -18,7 +18,6 @@ window.addEventListener("message", event => {
 });
 
 let jdkEntries: JavaRuntimeEntry[];
-
 function showJavaRuntimeEntries(entries: JavaRuntimeEntry[]) {
   jdkEntries = entries;
   render();
@@ -62,5 +61,13 @@ function requestJdkInfo(jdkVersion: string, jvmImpl: string) {
     command: "requestJdkInfo",
     jdkVersion: jdkVersion,
     jvmImpl: jvmImpl
+  });
+}
+
+export function udpateJavaHome(entry: JavaRuntimeEntry) {
+  entry.usedByLS = true;
+  vscode.postMessage({
+    command: "updateJavaHome",
+    javaHome: entry.path
   });
 }

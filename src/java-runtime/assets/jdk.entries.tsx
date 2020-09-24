@@ -4,6 +4,9 @@
 import * as React from "react";
 import { JavaRuntimeEntry } from "../types";
 import * as _ from "lodash";
+import { udpateJavaHome } from ".";
+
+const MIN_JDK_VERSION: number = 11;
 
 export interface JavaRuntimeEntryPanelProps {
   data: JavaRuntimeEntry[];
@@ -27,12 +30,10 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
 
   const entries = entryData.map((entry, index) => {
     let badgeClasses = ["badge", "badge-pill"];
-    if (index === currentIndex) {
-      if (index === errorIndex) {
-        badgeClasses.push("badge-danger");
-      } else {
-        badgeClasses.push("badge-success");
-      }
+    if (!entry.version || entry.version < MIN_JDK_VERSION) {
+      badgeClasses.push("badge-danger");
+    } else {
+      badgeClasses.push("badge-success");
     }
 
     return (
@@ -42,27 +43,28 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
           {!entry.path && <em>{"<Empty>"}</em>}
           {entry.path}
           &nbsp;
-          {index === currentIndex && <span className={badgeClasses.join(" ")}>Current</span>}
-          {entry.path && !entry.isValid && <span className="badge badge-pill badge-secondary" title={entry.hint}>Invalid</span>}
+          {/* {index === currentIndex && <span className={badgeClasses.join(" ")}>Current</span>} */}
+          {/* {entry.path && !entry.isValid && <span className="badge badge-pill badge-secondary" title={entry.hint}>Invalid</span>} */}
           {entry.path && entry.hint && <div><em className={errorIndex === index ? "text-danger" : "text-warning"}>{entry.hint}</em></div>}
         </td>
         <td>
-          {entry.name}
+          {entry.version}
         </td>
         <td>
-          {!entry.actionUri && entry.type}
-          {entry.actionUri && <a href={entry.actionUri}>{entry.type}</a>}
+          {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
+          {!entry.usedByLS && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
+        </td>
+        <td>
+          {entry.isRuntime && <span className={badgeClasses.join(" ")}>In Use</span>}
         </td>
       </tr>
     );
   });
 
-  const hasValidJdk = _.some(entryData, entry => entry.isValid);
+  const hasValidJdk = _.some(entryData, entry => entry.version >= MIN_JDK_VERSION);
   let message = ``;
   if (!hasValidJdk) {
     message = "⚠️ No JDK installation was detected. Please follow the links below to download and install one.";
-  } else if (errorIndex !== -1) {
-    message = "⚠️ The current path is not pointing to a valid JDK folder. Please fix the path and reload VS Code.";
   }
 
   return (
@@ -75,8 +77,9 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
           <tr>
             <th scope="col">#</th>
             <th scope="col">Path</th>
-            <th scope="col">Source</th>
-            <th scope="col">Type</th>
+            <th scope="col">Version</th>
+            <th scope="col">LS</th>
+            <th scope="col"><a href="command:workbench.action.openSettings?%22java.configuration.runtime%22">Project</a></th>
           </tr>
         </thead>
         <tbody>
