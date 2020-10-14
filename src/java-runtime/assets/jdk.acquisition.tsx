@@ -4,10 +4,11 @@
 import * as React from "react";
 import { JavaRuntimeEntryPanel } from "./jdk.entries";
 import { JdkInstallationPanel, JdkRquestHandler } from "./jdk.installation";
-import { JavaRuntimeEntry, JdkData } from "../types";
+import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
 
 export interface JdkAcquisitionPanelProps {
   jdkEntries: JavaRuntimeEntry[];
+  projectRuntimes: ProjectRuntimeEntry[];
   jdkData: JdkData;
   onRequestJdk: JdkRquestHandler;
 }
@@ -31,7 +32,7 @@ export const JdkAcquisitionPanel = (props: JdkAcquisitionPanelProps) => {
           </p>
           <div className="card">
             <div className="card-body">
-              <JavaRuntimeEntryPanel data={props.jdkEntries} />
+              <JavaRuntimeEntryPanel data={props.jdkEntries} projectRuntimes={props.projectRuntimes} />
             </div>
           </div>
         </div>

@@ -7,7 +7,6 @@ export interface JavaRuntimeEntry {
   type: string;
   version?: number;
   usedByLS?: boolean;
-  isRuntime?: boolean;
   actionUri?: string;
   isValid?: boolean;
   hint?: string;
@@ -19,4 +18,11 @@ export interface JdkData {
   name: string;
   size: string;
   downloadLink: string;
+}
+
+export interface ProjectRuntimeEntry {
+  name: string;
+  rootPath: string;
+  runtimePath: string;
+  sourceLevel: string;
 }
