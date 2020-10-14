@@ -30,6 +30,7 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
 
   const entries = entryData.map((entry, index) => {
     let badgeClasses = ["badge", "badge-pill"];
+    let projectBadgeClasses = ["badge", "badge-pill", "badge-success"];
     if (!entry.version || entry.version < MIN_JDK_VERSION) {
       badgeClasses.push("badge-danger");
     } else {
@@ -52,16 +53,16 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
         </td>
         <td>
           {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
-          {!entry.usedByLS && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
+          {!entry.usedByLS && entry.version && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
         </td>
         <td>
-          {entry.isRuntime && <span className={badgeClasses.join(" ")}>In Use</span>}
+          {entry.isRuntime && <span className={projectBadgeClasses.join(" ")}>In Use</span>}
         </td>
       </tr>
     );
   });
 
-  const hasValidJdk = _.some(entryData, entry => entry.version >= MIN_JDK_VERSION);
+  const hasValidJdk = _.some(entryData, entry => entry.version && entry.version >= MIN_JDK_VERSION);
   let message = ``;
   if (!hasValidJdk) {
     message = "⚠️ No JDK installation was detected. Please follow the links below to download and install one.";

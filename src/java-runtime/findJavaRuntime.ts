@@ -251,7 +251,7 @@ async function findLinkedFile(file: string): Promise<string> {
 }
 
 
-async function getJavaVersion(javaHome: string): Promise<number | undefined> {
+export async function getJavaVersion(javaHome: string): Promise<number | undefined> {
     return new Promise((resolve, reject) => {
         const javaBinary = path.join(javaHome, "bin", JAVA_FILENAME);
         cp.execFile(javaBinary, ["-version"], {}, (error, stdout, stderr) => {

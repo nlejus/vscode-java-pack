@@ -1,18 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as vscode from "vscode";
-import * as cp from "child_process";
-import * as path from "path";
-import expandTilde = require("expand-tilde");
-import * as pathExists from "path-exists";
-import * as request from "request-promise-native";
-import findJavaHome = require("find-java-home");
-import architecture = require("arch");
-import { loadTextFromFile, getExtensionContext } from "../utils";
-import { JavaRuntimeEntry } from "./types";
 import * as _ from "lodash";
-import { findJavaHomes, JavaRuntime } from "./findJavaRuntime";
+import * as path from "path";
+import * as request from "request-promise-native";
+import * as vscode from "vscode";
+import { getExtensionContext, loadTextFromFile } from "../utils";
+import { findJavaHomes, getJavaVersion, JavaRuntime } from "./findJavaRuntime";
+import { JavaRuntimeEntry } from "./types";
+import architecture = require("arch");
+import { checkJavaRuntime } from "./upstreamApi";
 
 let javaRuntimeView: vscode.WebviewPanel | undefined;
 let javaHomes: JavaRuntime[];
@@ -93,55 +90,21 @@ export class JavaRuntimeViewSerializer implements vscode.WebviewPanelSerializer 
   }
 }
 
-const isWindows = process.platform.indexOf("win") === 0;
-const JAVAC_FILENAME = path.join("bin", "javac" + (isWindows ? ".exe" : ""));
-const JAVA_FILENAME = path.join("bin", "java" + (isWindows ? ".exe" : ""));
-
-// Taken from https://github.com/Microsoft/vscode-java-debug/blob/7abda575111e9ce2221ad9420330e7764ccee729/src/launchCommand.ts
-
-function parseMajorVersion(content: string): number {
-  let regexp = /version "(.*)"/g;
-  let match = regexp.exec(content);
-  if (!match) {
-    return 0;
-  }
-  let version = match[1];
-  // Ignore '1.' prefix for legacy Java versions
-  if (version.startsWith("1.")) {
-    version = version.substring(2);
-  }
-
-  // look into the interesting bits now
-  regexp = /\d+/g;
-  match = regexp.exec(version);
-  let javaVersion = 0;
-  if (match) {
-    javaVersion = parseInt(match[0], 10);
-  }
-  return javaVersion;
-}
-
-async function getJavaVersion(javaHome: string | undefined): Promise<number> {
-  if (!javaHome) {
-    return Promise.resolve(0);
-  }
-
-  return new Promise<number>((resolve, reject) => {
-    cp.execFile(path.resolve(javaHome, JAVA_FILENAME), ["-version"], {}, (err, stdout, stderr) => {
-      resolve(parseMajorVersion(stderr));
-    });
-  });
-}
-
 export async function validateJavaRuntime() {
-  const entries = await findJavaRuntimeEntries();
-  // Java LS uses the first non-empty path to locate the JDK
-  const currentPathIndex = entries.findIndex(entry => !_.isEmpty(entry.path));
-  if (currentPathIndex !== -1) {
-    return entries[currentPathIndex].isValid;
+  // TODO:
+  // option a) should check Java LS exported API for java_home
+  // * option b) use the same way to check java_home as vscode-java
+  try {
+    const upstreamJavaHome = await checkJavaRuntime();
+    if (upstreamJavaHome) {
+      const version = await getJavaVersion(upstreamJavaHome);
+      if (version && version >= 11) {
+        return true;
+      }
+    }
+  } catch (error) {
   }
-
-  return _.some(entries, entry => entry.isValid);
+  return false;
 }
 
 export async function findJavaRuntimeEntries(): Promise<JavaRuntimeEntry[]> {
@@ -149,7 +112,7 @@ export async function findJavaRuntimeEntries(): Promise<JavaRuntimeEntry[]> {
     javaHomes = await findJavaHomes();
   }
   const entries = javaHomes;
-  const javaHomeForLS = vscode.workspace.getConfiguration("java").get("home");
+  const javaHomeForLS = await checkJavaRuntime();
 
   const currentRuntime = await getCurrentRuntime();
   return entries.map(elem => ({
