@@ -2,14 +2,15 @@
 // Licensed under the MIT license.
 
 import * as React from "react";
-import { JavaRuntimeEntry } from "../types";
+import { JavaRuntimeEntry, ProjectRuntimeEntry } from "../types";
 import * as _ from "lodash";
-import { udpateJavaHome } from ".";
+import { udpateJavaHome, updateRuntimePath } from ".";
 
 const MIN_JDK_VERSION: number = 11;
 
 export interface JavaRuntimeEntryPanelProps {
   data: JavaRuntimeEntry[];
+  projectRuntimes: ProjectRuntimeEntry[];
 }
 
 export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefined) => {
@@ -22,6 +23,7 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
   }
 
   const entryData = (props && props.data) || [];
+  const projectRuntims = (props && props.projectRuntimes) || [];
   const currentIndex = entryData.findIndex(entry => !!entry.path);
   let errorIndex = -1;
   if (currentIndex !== -1 && !entryData[currentIndex].isValid) {
@@ -35,7 +37,7 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
     } else {
       badgeClasses.push("badge-success");
     }
-
+    const projectRuntimeBadgeClasses = ["badge", "badge-pill", "badge-success"];
     return (
       <tr key={index}>
         <th scope="row">{index + 1}</th>
@@ -52,11 +54,16 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
         </td>
         <td>
           {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
-          {!entry.usedByLS && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
+          {!entry.usedByLS && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={() => udpateJavaHome(entry)} >Use</a>}
         </td>
-        <td>
-          {entry.isRuntime && <span className={badgeClasses.join(" ")}>In Use</span>}
-        </td>
+        {projectRuntims.map(project => {
+          return (
+            <td>
+              {entry.path === project.runtimePath && <span className={projectRuntimeBadgeClasses.join(" ")}>In Use</span>}
+              {entry.path !== project.runtimePath && entry.version >= getMajorVersion(project.sourceLevel) && <a href="#" onClick={() => updateRuntimePath(sourceLevelDisplayName(project.sourceLevel), entry.path)}>Use</a>}
+            </td>
+          );
+        })}
       </tr>
     );
   });
@@ -78,8 +85,11 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
             <th scope="col">#</th>
             <th scope="col">Path</th>
             <th scope="col">Version</th>
-            <th scope="col">LS</th>
-            <th scope="col"><a href="command:workbench.action.openSettings?%22java.configuration.runtime%22">Project</a></th>
+            <th scope="col">LanguageServer</th>
+            {projectRuntims.map(project => {
+              // <a href="command:workbench.action.openSettings?%22java.configuration.runtime%22">
+              return (<th scope="col">{project.name}({sourceLevelDisplayName(project.sourceLevel)})</th>);
+            })}
           </tr>
         </thead>
         <tbody>
@@ -89,3 +99,35 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
     </div>
   );
 };
+
+function sourceLevelDisplayName(ver: string) {
+  if (!ver) {
+    return "";
+  }
+
+  if (ver === "1.5") {
+    return "J2SE-1.5";
+  }
+
+  return `JavaSE-${ver}`;
+}
+
+
+function getMajorVersion(version: string) {
+  if (!version) {
+    return 0;
+  }
+  // Ignore "1." prefix for legacy Java versions
+  if (version.startsWith("1.")) {
+    version = version.substring(2);
+  }
+
+  // look into the interesting bits now
+  const regexp = /\d+/g;
+  const match = regexp.exec(version);
+  let javaVersion = 0;
+  if (match) {
+    javaVersion = parseInt(match[0], 10);
+  }
+  return javaVersion;
+}

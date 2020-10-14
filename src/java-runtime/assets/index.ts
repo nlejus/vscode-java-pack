@@ -5,7 +5,7 @@ import "../../assets/vscode.scss";
 import "bootstrap/js/src/tab";
 import bytes = require("bytes");
 import * as ReactDOM from "react-dom";
-import { JavaRuntimeEntry, JdkData } from "../types";
+import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
 import { JdkAcquisitionPanel, JdkAcquisitionPanelProps } from "./jdk.acquisition";
 import * as React from "react";
 
@@ -18,8 +18,13 @@ window.addEventListener("message", event => {
 });
 
 let jdkEntries: JavaRuntimeEntry[];
-function showJavaRuntimeEntries(entries: JavaRuntimeEntry[]) {
-  jdkEntries = entries;
+let projectRuntimes: ProjectRuntimeEntry[];
+function showJavaRuntimeEntries(entries: {
+  javaRuntimes: JavaRuntimeEntry[];
+  projectRuntimes: ProjectRuntimeEntry[];
+}) {
+  jdkEntries = entries.javaRuntimes;
+  projectRuntimes = entries.projectRuntimes;
   render();
 }
 
@@ -34,7 +39,7 @@ function applyJdkInfo(jdkInfo: any) {
     name: jdkInfo.release_name,
     os: binary.os,
     arch: binary.architecture,
-    size: bytes(binary.binary_size, {unitSeparator: " "}),
+    size: bytes(binary.binary_size, { unitSeparator: " " }),
     downloadLink: encodedLink
   };
 
@@ -44,6 +49,7 @@ function applyJdkInfo(jdkInfo: any) {
 function render() {
   const props: JdkAcquisitionPanelProps = {
     jdkEntries: jdkEntries,
+    projectRuntimes: projectRuntimes,
     jdkData: jdkData,
     onRequestJdk: requestJdkInfo
   };
@@ -69,5 +75,13 @@ export function udpateJavaHome(entry: JavaRuntimeEntry) {
   vscode.postMessage({
     command: "updateJavaHome",
     javaHome: entry.path
+  });
+}
+
+export function updateRuntimePath(sourceLevel: string, runtimePath: string) {
+  vscode.postMessage({
+    command: "updateRuntimePath",
+    sourceLevel,
+    runtimePath
   });
 }
