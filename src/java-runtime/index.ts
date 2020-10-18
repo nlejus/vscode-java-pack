@@ -148,7 +148,7 @@ export async function findJavaRuntimeEntries(): Promise<{
   return {
     javaRuntimes: javaRuntimeEntries,
     projectRuntimes: projectRuntimes
-  }
+  };
 }
 
 async function getProjectRuntimes(): Promise<ProjectRuntimeEntry[]> {

@@ -13,6 +13,12 @@ export interface JavaRuntimeEntryPanelProps {
   projectRuntimes: ProjectRuntimeEntry[];
 }
 
+interface RuntimeEntry {
+  sourceLevel: string;
+  runtimePath: string;
+  projects: string[];
+}
+
 export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefined) => {
   const isLoading = _.isEmpty(props && props.data);
 
@@ -23,7 +29,20 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
   }
 
   const entryData = (props && props.data) || [];
-  const projectRuntims = (props && props.projectRuntimes) || [];
+  const projectRuntimes = (props && props.projectRuntimes) || [];
+  const runtimes: RuntimeEntry[] = [];
+  for (const entry of projectRuntimes) {
+    const runtime = runtimes.find(r => r.sourceLevel === entry.sourceLevel);
+    if (runtime) {
+      runtime.projects.push(entry.name);
+    } else {
+      runtimes.push({
+        sourceLevel: entry.sourceLevel,
+        runtimePath: entry.runtimePath,
+        projects: [entry.name]
+      });
+    }
+  }
   const currentIndex = entryData.findIndex(entry => !!entry.path);
   let errorIndex = -1;
   if (currentIndex !== -1 && !entryData[currentIndex].isValid) {
@@ -57,11 +76,11 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
           {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
           {!entry.usedByLS && entry.version && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
         </td>
-        {projectRuntims.map(project => {
+        {runtimes.map(runtime => {
           return (
             <td>
-              {entry.path === project.runtimePath && <span className={projectRuntimeBadgeClasses.join(" ")}>In Use</span>}
-              {entry.path !== project.runtimePath && entry.version >= getMajorVersion(project.sourceLevel) && <a href="#" onClick={() => updateRuntimePath(sourceLevelDisplayName(project.sourceLevel), entry.path)}>Use</a>}
+              {entry.path === runtime.runtimePath && <span className={projectRuntimeBadgeClasses.join(" ")}>In Use</span>}
+              {entry.path !== runtime.runtimePath && entry.version >= getMajorVersion(runtime.sourceLevel) && <a href="#" onClick={() => updateRuntimePath(sourceLevelDisplayName(runtime.sourceLevel), entry.path)}>Use</a>}
             </td>
           );
         })}
@@ -87,9 +106,9 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
             <th scope="col">Path</th>
             <th scope="col">Version</th>
             <th scope="col">LanguageServer</th>
-            {projectRuntims.map(project => {
+            {runtimes.map(runtime => {
               // <a href="command:workbench.action.openSettings?%22java.configuration.runtime%22">
-              return (<th scope="col">{project.name}({sourceLevelDisplayName(project.sourceLevel)})</th>);
+              return (<th scope="col">{sourceLevelDisplayName(runtime.sourceLevel)} ({runtime.projects.join(",")})</th>);
             })}
           </tr>
         </thead>
