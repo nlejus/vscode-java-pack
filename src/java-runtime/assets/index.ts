@@ -8,6 +8,7 @@ import * as ReactDOM from "react-dom";
 import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
 import { JdkAcquisitionPanel, JdkAcquisitionPanelProps } from "./jdk.acquisition";
 import * as React from "react";
+import { JdkInstallationPanel } from "./jdk.installation";
 
 window.addEventListener("message", event => {
   if (event.data.command === "applyJdkInfo") {

@@ -76,14 +76,6 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
           {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
           {!entry.usedByLS && entry.version && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
         </td>
-        {runtimes.map(runtime => {
-          return (
-            <td>
-              {entry.path === runtime.runtimePath && <span className={projectRuntimeBadgeClasses.join(" ")}>In Use</span>}
-              {entry.path !== runtime.runtimePath && entry.version >= getMajorVersion(runtime.sourceLevel) && <a href="#" onClick={() => updateRuntimePath(sourceLevelDisplayName(runtime.sourceLevel), entry.path)}>Use</a>}
-            </td>
-          );
-        })}
       </tr>
     );
   });
@@ -106,10 +98,6 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
             <th scope="col">Path</th>
             <th scope="col">Version</th>
             <th scope="col">LanguageServer</th>
-            {runtimes.map(runtime => {
-              // <a href="command:workbench.action.openSettings?%22java.configuration.runtime%22">
-              return (<th scope="col">{sourceLevelDisplayName(runtime.sourceLevel)} ({runtime.projects.join(",")})</th>);
-            })}
           </tr>
         </thead>
         <tbody>

@@ -7,9 +7,9 @@ import * as path from "path";
 import * as request from "request-promise-native";
 import * as vscode from "vscode";
 import { getExtensionContext, loadTextFromFile } from "../utils";
-import { findJavaHomes, getJavaVersion, JavaRuntime } from "./findJavaRuntime";
+import { findJavaHomes, getJavaVersion, JavaRuntime } from "./utils/findJavaRuntime";
 import architecture = require("arch");
-import { checkJavaRuntime } from "./upstreamApi";
+import { checkJavaRuntime } from "./utils/upstreamApi";
 import { JavaRuntimeEntry, ProjectRuntimeEntry } from "./types";
 
 let javaRuntimeView: vscode.WebviewPanel | undefined;
@@ -143,7 +143,7 @@ export async function findJavaRuntimeEntries(): Promise<{
     path: elem.home,
     version: elem.version,
     type: elem.sources.join(","),
-    usedByLS: elem.home === javaHomeForLS
+    usedByLS: path.relative(elem.home, javaHomeForLS) === ""
   })).sort((a, b) => b.version - a.version);
   return {
     javaRuntimes: javaRuntimeEntries,
@@ -154,15 +154,15 @@ export async function findJavaRuntimeEntries(): Promise<{
 async function getProjectRuntimes(): Promise<ProjectRuntimeEntry[]> {
   const ret: ProjectRuntimeEntry[] = [];
   const javaExt = vscode.extensions.getExtension("redhat.java");
-  if (javaExt && javaExt.isActive && vscode.workspace.workspaceFolders) {
+  if (javaExt && javaExt.isActive) {
+    const projects: string[] = await vscode.commands.executeCommand("java.execute.workspaceCommand", "java.project.getAll") || [];
     const SOURCE_LEVEL_KEY = "org.eclipse.jdt.core.compiler.source";
     const VM_INSTALL_PATH = "org.eclipse.jdt.ls.core.vm.location";
-    for (const wf of vscode.workspace.workspaceFolders) {
-      const projectRoot = wf.uri.toString();
+    for (const projectRoot of projects) {
       try {
         const settings: any = await javaExt.exports.getProjectSettings(projectRoot, [SOURCE_LEVEL_KEY, VM_INSTALL_PATH]);
         ret.push({
-          name: wf.name,
+          name: projectRoot,
           rootPath: projectRoot,
           runtimePath: settings[VM_INSTALL_PATH],
           sourceLevel: settings[SOURCE_LEVEL_KEY]
