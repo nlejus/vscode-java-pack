@@ -47,57 +47,40 @@ export const ProjectRuntimePanel = (props) => {
     <div className="col">
       <div className="row mb-3">
         <div className="col">
-          <h3 className="font-weight-light">Invisible Projects</h3>
+          <h3 className="font-weight-light">Maven/Gradle Projects</h3>
           <p>
-            Java Language Server requires version 11 or later to launch. Detected JDKs are listed below:
+            <b>Source level</b> of your project is managed by Maven/Gradle.
+          </p>
+          <p>pom.xml:</p>
+          <blockquote>
+            <code>
+              <span>&lt;properties&gt;</span><br />
+              <span>&nbsp;&nbsp;&lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;</span><br />
+              <span>&nbsp;&nbsp;&lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;</span><br />
+              <span>&lt;/properties&gt;</span>
+            </code>
+          </blockquote>
+
+          <p>build.gradle:</p>
+          <blockquote>
+            <code>
+              <span>sourceCompatibility = 1.8</span><br />
+              <span>targetCompatibility = 1.8</span><br />
+            </code>
+          </blockquote>
+
+          <p>You can specify corresponding JDK for each source level</p>
+          {sourceLevelEntries.map(entry => (<SourceLevelRuntimePanel entry={entry} jdks={jdks} />))}
+        </div>
+
+        <div className="col">
+          <h3 className="font-weight-light">Projects without build tools</h3>
+          <p>
+            TBD: Descriptions
             </p>
           <InvisibleProjectsRuntimePanel entry={invisibleProjectEntry} />
-        </div>
-      </div>
-      <div className="row mb-3">
-        <div className="col">
-          <h3 className="font-weight-light">Managed Projects</h3>
-          <p>
-            Java Language Server requires version 11 or later to launch. Detected JDKs are listed below:
-            </p>
-          {sourceLevelEntries.map(entry => (<SourceLevelRuntimePanel entry={entry} jdks={jdks} />))}
         </div>
       </div>
     </div>
   );
 }
-
-
-// export const ProjectRuntimePanel = (props) => {
-//   const invisibleProjects = []; // TODO
-//   return (
-//     <div className="col">
-//       <div className="row mb-3">
-//         <div className="col">
-//           <h3 className="font-weight-light">Invisible Projects</h3>
-//           <p>
-//             Java Language Server requires version 11 or later to launch. Detected JDKs are listed below:
-//           </p>
-//           <div className="card">
-//             <div className="card-body">
-//               <JavaRuntimeEntryPanel data={props.jdkEntries} projectRuntimes={props.projectRuntimes} />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//       <div className="row mb-3">
-//         <div className="col">
-//           <h3 className="font-weight-light">Install</h3>
-//           <p>
-//             To download and install JDK, follow the links below:
-//           </p>
-//           <div className="card">
-//             <div className="card-body">
-//               <JdkInstallationPanel data={props.jdkData} onRequestJdk={props.onRequestJdk} />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };

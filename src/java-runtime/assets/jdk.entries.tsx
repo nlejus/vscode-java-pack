@@ -75,6 +75,7 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
         <td>
           {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
           {!entry.usedByLS && entry.version && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
+          {!entry.usedByLS && entry.version && entry.version < MIN_JDK_VERSION && <span>-</span>}
         </td>
       </tr>
     );

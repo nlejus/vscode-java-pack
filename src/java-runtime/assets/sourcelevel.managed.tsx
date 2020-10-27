@@ -16,24 +16,16 @@ export class SourceLevelRuntimePanel extends React.Component<Props, {}> {
         <div className="col">
           <div className="row sourcelevel">
             <div className="col">
-            <div className="input-group mb-3">
+              <div className="input-group mb-3">
                 <div className="input-group-prepend">
                   <label className="input-group-text" htmlFor="invisible">{sourcelevel}:</label>
                 </div>
                 <select className="custom-select" name="jdk-for" id={sourcelevel}>
-                {this.props.jdks.map(jdk => (
-                  <option value={jdk.path}>{jdk.name}</option>
-                ))}
-              </select>
+                  {this.props.jdks.map(jdk => (
+                    <option value={jdk.path}>{jdk.name}</option>
+                  ))}
+                </select>
               </div>
-            </div>
-          </div>
-          <div className="row projects">
-            <div className="col">
-              <span>Related projects:</span>
-              <ul>
-                {projects.map(p => (<li>{p.name}</li>))}
-              </ul>
             </div>
           </div>
         </div>

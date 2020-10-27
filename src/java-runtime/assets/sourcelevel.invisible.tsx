@@ -12,7 +12,7 @@ export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
       "JavaSE-1.8",
       "JavaSE-11",
       "JavaSE-14",
-    ]
+    ];
     return (
       <div className="row">
         <div className="col">
@@ -28,22 +28,6 @@ export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
                   ))}
                 </select>
               </div>
-            </div>
-            {/* <div className="col">
-              <span>Source Level:</span>
-              <select name="sourcelevel" id="invisible">
-              {possibleLevels.map(lvl => (
-                  <option value={lvl}>{lvl}</option>
-                ))}
-              </select>
-            </div> */}
-          </div>
-          <div className="row projects">
-            <div className="col">
-              <span>Related projects:</span>
-              <ul>
-                {projects.map(p => (<li>{p.name}</li>))}
-              </ul>
             </div>
           </div>
         </div>
