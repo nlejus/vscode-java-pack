@@ -26,3 +26,16 @@ export interface ProjectRuntimeEntry {
   runtimePath: string;
   sourceLevel: string;
 }
+
+export interface RuntimeEntry {
+  sourcelevel: string;
+  runtimePath: string;
+  projects: { name: string, rootPath: string }[];
+}
+
+export interface JDKEntry {
+  name: string;
+  path: string;
+  version: string;
+  majorVersion: number;
+}

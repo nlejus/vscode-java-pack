@@ -9,6 +9,7 @@ import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
 import { JdkAcquisitionPanel, JdkAcquisitionPanelProps } from "./jdk.acquisition";
 import * as React from "react";
 import { JdkInstallationPanel } from "./jdk.installation";
+import { ProjectRuntimePanel } from "./projectRuntimePanel";
 
 window.addEventListener("message", event => {
   if (event.data.command === "applyJdkInfo") {
@@ -56,6 +57,7 @@ function render() {
   };
 
   ReactDOM.render(React.createElement(JdkAcquisitionPanel, props), document.getElementById("jdkAcquisitionPanel"));
+  ReactDOM.render(React.createElement(ProjectRuntimePanel, props), document.getElementById("projectRuntimePanel"));
 }
 
 render();
