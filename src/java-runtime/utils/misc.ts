@@ -33,6 +33,6 @@ export function sourceLevelMajorVersion(level: string): number {
   return javaVersion;
 }
 
-export function isSamePath(a: string, b: string) {
-  return path.relative(a, b) === "";
+export function isSamePath(a: string, b: string): boolean {
+  return !!(a && b) && path.relative(a, b) === "";
 }
