@@ -1,16 +1,17 @@
-import { link } from "fs";
+import * as path from "path";
 import * as React from "react";
-import { JDKEntry, RuntimeEntry } from "../types";
+import { JDKEntry, ProjectRuntimeEntry, RuntimeEntry } from "../types";
+import { sourceLevelDisplayName, sourceLevelMajorVersion } from "../utils/misc";
 
 interface Props {
   entry: RuntimeEntry;
-  jdks: JDKEntry[]
+  jdks: JDKEntry[];
 }
 
 export class SourceLevelRuntimePanel extends React.Component<Props, {}> {
 
   render() {
-    const { projects, sourcelevel, runtimePath } = this.props.entry;
+    const { sourceLevel, runtimePath } = this.props.entry;
     return (
       <div className="row">
         <div className="col">
@@ -18,11 +19,13 @@ export class SourceLevelRuntimePanel extends React.Component<Props, {}> {
             <div className="col">
               <div className="input-group mb-3">
                 <div className="input-group-prepend">
-                  <label className="input-group-text" htmlFor="invisible">{sourcelevel}:</label>
+                  <label className="input-group-text" htmlFor="invisible">{sourceLevelDisplayName(sourceLevel)}:</label>
                 </div>
-                <select className="custom-select" name="jdk-for" id={sourcelevel}>
-                  {this.props.jdks.map(jdk => (
-                    <option value={jdk.path}>{jdk.name}</option>
+                <select className="custom-select" name="jdk-for" id={sourceLevel}>
+                  {this.props.jdks.filter(jdk => jdk.majorVersion >= sourceLevelMajorVersion(sourceLevel)).map(jdk => (
+                    path.relative(jdk.fspath, runtimePath) === "" ?
+                      <option selected value={jdk.fspath}>{jdk.name}</option>
+                      : <option value={jdk.fspath}>{jdk.name}</option>
                   ))}
                 </select>
               </div>

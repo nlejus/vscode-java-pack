@@ -8,13 +8,15 @@ import * as ReactDOM from "react-dom";
 import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
 import { JdkAcquisitionPanel, JdkAcquisitionPanelProps } from "./jdk.acquisition";
 import * as React from "react";
-import { JdkInstallationPanel } from "./jdk.installation";
 import { ProjectRuntimePanel } from "./projectRuntimePanel";
+import { JdkInstallationPanel } from "./jdk.installation";
+import { ConfigureLSPanel } from "./jdk.ls";
 
 window.addEventListener("message", event => {
   if (event.data.command === "applyJdkInfo") {
     applyJdkInfo(event.data.jdkInfo);
   } else if (event.data.command === "showJavaRuntimeEntries") {
+    console.log(event);
     showJavaRuntimeEntries(event.data.entries);
   }
 });
@@ -58,7 +60,10 @@ function render() {
 
   ReactDOM.render(React.createElement(JdkAcquisitionPanel, props), document.getElementById("jdkAcquisitionPanel"));
   ReactDOM.render(React.createElement(ProjectRuntimePanel, props), document.getElementById("projectRuntimePanel"));
+  ReactDOM.render(React.createElement(ConfigureLSPanel, props), document.getElementById("configureLsPanel"));
+  ReactDOM.render(React.createElement(JdkInstallationPanel, {data: jdkData, onRequestJdk: requestJdkInfo}, null ), document.getElementById("jdkInstallationPanel"));
 }
+
 
 render();
 

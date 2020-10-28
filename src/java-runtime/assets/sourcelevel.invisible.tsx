@@ -1,18 +1,18 @@
 import * as React from "react";
-import { RuntimeEntry } from "../types";
+import * as _ from "lodash";
+import { JDKEntry, RuntimeEntry } from "../types";
+import { sourceLevelDisplayName } from "../utils/misc";
 
 interface Props {
-  entry: RuntimeEntry;
+  jdks: JDKEntry[];
+  defaultSourceLevel: string;
 }
 
 export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
   render() {
-    const { projects } = this.props.entry;
-    const possibleLevels = [
-      "JavaSE-1.8",
-      "JavaSE-11",
-      "JavaSE-14",
-    ];
+    const { jdks, defaultSourceLevel } = this.props;
+    console.log(this.props);
+    const possibleLevels = _.uniq(jdks.map(jdk => jdk.majorVersion.toString()));
     return (
       <div className="row">
         <div className="col">
@@ -20,11 +20,13 @@ export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
             <div className="col">
               <div className="input-group mb-3">
                 <div className="input-group-prepend">
-                  <label className="input-group-text" htmlFor="invisible">Source Level:</label>
+                  <label className="input-group-text" htmlFor="invisible">Default SDK:</label>
                 </div>
                 <select className="custom-select" id="invisible">
                   {possibleLevels.map(lvl => (
-                    <option value={lvl}>{lvl}</option>
+                    lvl === defaultSourceLevel ?
+                      <option selected value={lvl}>{sourceLevelDisplayName(lvl)}</option>
+                      : <option value={lvl}>{sourceLevelDisplayName(lvl)}</option>
                   ))}
                 </select>
               </div>

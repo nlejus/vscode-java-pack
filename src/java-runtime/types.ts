@@ -28,14 +28,14 @@ export interface ProjectRuntimeEntry {
 }
 
 export interface RuntimeEntry {
-  sourcelevel: string;
+  sourceLevel: string;
   runtimePath: string;
-  projects: { name: string, rootPath: string }[];
+  projects?: { name: string, rootPath: string }[];
 }
 
 export interface JDKEntry {
   name: string;
-  path: string;
+  fspath: string;
   version: string;
   majorVersion: number;
 }

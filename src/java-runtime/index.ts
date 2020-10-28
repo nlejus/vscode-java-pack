@@ -11,6 +11,7 @@ import { findJavaHomes, getJavaVersion, JavaRuntime } from "./utils/findJavaRunt
 import architecture = require("arch");
 import { checkJavaRuntime } from "./utils/upstreamApi";
 import { JavaRuntimeEntry, ProjectRuntimeEntry } from "./types";
+import { isSamePath } from "./utils/misc";
 
 let javaRuntimeView: vscode.WebviewPanel | undefined;
 let javaHomes: JavaRuntime[];
@@ -143,7 +144,7 @@ export async function findJavaRuntimeEntries(): Promise<{
     path: elem.home,
     version: elem.version,
     type: elem.sources.join(","),
-    usedByLS: path.relative(elem.home, javaHomeForLS) === ""
+    usedByLS: isSamePath(elem.home, javaHomeForLS),
   })).sort((a, b) => b.version - a.version);
   return {
     javaRuntimes: javaRuntimeEntries,

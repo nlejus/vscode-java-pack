@@ -29,19 +29,6 @@ export const JdkAcquisitionPanel = (props: JdkAcquisitionPanelProps) => {
           </div>
         </div>
       </div>
-      <div className="row mb-3">
-        <div className="col">
-          <h3 className="font-weight-light">Install</h3>
-          <p>
-            To download and install JDK, follow the links below:
-          </p>
-          <div className="card">
-            <div className="card-body">
-              <JdkInstallationPanel data={props.jdkData} onRequestJdk={props.onRequestJdk} />
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

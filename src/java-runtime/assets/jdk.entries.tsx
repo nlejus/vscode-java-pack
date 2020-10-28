@@ -72,11 +72,11 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
         <td>
           {entry.version}
         </td>
-        <td>
+        {/* <td>
           {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
           {!entry.usedByLS && entry.version && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
           {!entry.usedByLS && entry.version && entry.version < MIN_JDK_VERSION && <span>-</span>}
-        </td>
+        </td> */}
       </tr>
     );
   });
@@ -90,15 +90,15 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
   return (
     <div className="table-responsive">
       <table className="table table-borderless table-hover table-sm mb-0">
-        <caption className="pb-0">
+        {/* <caption className="pb-0">
           {message ? message : <div>If you change any of the entries above, you need to <a href="command:workbench.action.reloadWindow">reload</a> VS Code to make them effective.</div>}
-        </caption>
+        </caption> */}
         <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Path</th>
             <th scope="col">Version</th>
-            <th scope="col">LanguageServer</th>
+            {/* <th scope="col">LanguageServer</th> */}
           </tr>
         </thead>
         <tbody>

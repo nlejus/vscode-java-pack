@@ -27,7 +27,10 @@
                     <a class="nav-link active" id="configure-runtime-tab" data-toggle="tab" href="#configure-runtime-panel" role="tab" aria-controls="configure-runtime-panel" aria-selected="true" title="">Project SDKs</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" id="installed-jdks-tab" data-toggle="tab" href="#installed-jdks-panel" role="tab" aria-controls="installed-jdks-panel" aria-selected="false" title="">Setup Language Server</a>
+                    <a class="nav-link" id="configure-ls-tab" data-toggle="tab" href="#configure-ls-panel" role="tab" aria-controls="configure-ls-panel" aria-selected="false" title="">Setup Language Server</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="installed-jdks-tab" data-toggle="tab" href="#installed-jdks-panel" role="tab" aria-controls="installed-jdks-panel" aria-selected="false" title="">Installed JDKs</a>
                   </li>
                 </ul>
               </div>
@@ -41,6 +44,11 @@
                     <div class="row" id="projectRuntimePanel">Projects</div>
                   </div>
 
+                  <!-- Configure LS -->
+                  <div class="tab-pane fade" id="configure-ls-panel" role="tabpanel" aria-labelledby="configure-ls-tab">
+                    <div class="row" id="configureLsPanel">LS</div>
+                  </div>
+
                   <!-- Installed JDKs -->
                   <div class="tab-pane fade" id="installed-jdks-panel" role="tabpanel" aria-labelledby="installed-jdks-tab">
                     <div class="row" id="jdkAcquisitionPanel">Install</div>
@@ -49,8 +57,18 @@
               </div>
               <div class="col-3 d-none">
                 <div class="list-group list-group-flush" role="tablist">
-                  <a class="list-group-item list-group-action active" id="configure-runtime-tab" data-toggle="list" href="#configure-runtime-panel" role="tab" aria-controls="configure-runtime-panel" aria-selected="true" title="">Quick Start</a>
+                  <a class="list-group-item list-group-action" id="configure-runtime-tab" data-toggle="list" href="#configure-runtime-panel" role="tab" aria-controls="configure-runtime-panel" aria-selected="false" title="">Project SDKs</a>
                   <a class="list-group-item list-group-action" id="installed-jdks-tab" data-toggle="list" href="#installed-jdks-panel" role="tab" aria-controls="installed-jdks-panel" aria-selected="false" title="">FAQ</a>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="row mb-3">
+                  <div class="col">
+                    <h3 class="font-weight-light">Install A JDK</h3>
+                    <div class="row" id="jdkInstallationPanel">Install</div>
+                  </div>
                 </div>
               </div>
             </div>
