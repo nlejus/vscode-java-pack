@@ -11,7 +11,7 @@ import { findJavaHomes, getJavaVersion, JavaRuntime } from "./utils/findJavaRunt
 import architecture = require("arch");
 import { checkJavaRuntime } from "./utils/upstreamApi";
 import { JavaRuntimeEntry, ProjectRuntimeEntry } from "./types";
-import { isSamePath } from "./utils/misc";
+import { sourceLevelDisplayName } from "./utils/misc";
 
 let javaRuntimeView: vscode.WebviewPanel | undefined;
 let javaHomes: JavaRuntime[];
@@ -44,31 +44,64 @@ async function initializeJavaRuntimeView(context: vscode.ExtensionContext, webvi
 
   context.subscriptions.push(webviewPanel.onDidDispose(onDisposeCallback));
   context.subscriptions.push(webviewPanel.webview.onDidReceiveMessage(async (e) => {
-    if (e.command === "requestJdkInfo") {
-      let jdkInfo = await suggestOpenJdk(e.jdkVersion, e.jvmImpl);
-      applyJdkInfo(jdkInfo);
-    } else if (e.command === "updateJavaHome") {
-      const { javaHome } = e;
-      await vscode.workspace.getConfiguration("java").update("home", javaHome);
-      findJavaRuntimeEntries().then(data => {
-        showJavaRuntimeEntries(data);
-      });
-    } else if (e.command === "updateRuntimePath") {
-      const {sourceLevel, runtimePath} = e;
-      const runtimes = vscode.workspace.getConfiguration("java").get<any[]>("configuration.runtimes") || [];
-      const target = runtimes.find(r => r.name === sourceLevel);
-      if (target) {
-        target.path = runtimePath;
-      } else {
-        runtimes.push({
-          name: sourceLevel,
-          path: runtimePath
+    switch (e.command) {
+      case "requestJdkInfo": {
+        let jdkInfo = await suggestOpenJdk(e.jdkVersion, e.jvmImpl);
+        applyJdkInfo(jdkInfo);
+        break;
+      }
+      case "updateJavaHome": {
+        const { javaHome } = e;
+        await vscode.workspace.getConfiguration("java").update("home", javaHome);
+        findJavaRuntimeEntries().then(data => {
+          showJavaRuntimeEntries(data);
+        });
+        break;
+      }
+      case "updateRuntimePath": {
+        const { sourceLevel, runtimePath } = e;
+        const runtimes = vscode.workspace.getConfiguration("java").get<any[]>("configuration.runtimes") || [];
+        const target = runtimes.find(r => r.name === sourceLevel);
+        if (target) {
+          target.path = runtimePath;
+        } else {
+          runtimes.push({
+            name: sourceLevel,
+            path: runtimePath
+          });
+        }
+        await vscode.workspace.getConfiguration("java").update("configuration.runtimes", runtimes, vscode.ConfigurationTarget.Global);
+        findJavaRuntimeEntries().then(data => {
+          showJavaRuntimeEntries(data);
+        });
+        break;
+      }
+      case "setDefaultRuntime": {
+        const { runtimePath, majorVersion } = e;
+        const sourceLevel = sourceLevelDisplayName(majorVersion);
+        const runtimes = vscode.workspace.getConfiguration("java").get<any[]>("configuration.runtimes") || [];
+        for (const r of runtimes) {
+          delete r.default;
+        }
+
+        const targetRuntime = runtimes.find(r => r.path === runtimePath);
+        if (targetRuntime) {
+          targetRuntime.default = true;
+        } else {
+          runtimes.push({
+            name: sourceLevel,
+            path: runtimePath,
+            default: true
+          });
+        }
+        await vscode.workspace.getConfiguration("java").update("configuration.runtimes", runtimes, vscode.ConfigurationTarget.Global);
+        findJavaRuntimeEntries().then(data => {
+          showJavaRuntimeEntries(data);
         });
       }
-      await vscode.workspace.getConfiguration("java").update("configuration.runtimes", runtimes, vscode.ConfigurationTarget.Global);
-      findJavaRuntimeEntries().then(data => {
-        showJavaRuntimeEntries(data);
-      });
+
+      default:
+        break;
     }
   }));
 
@@ -79,13 +112,10 @@ async function initializeJavaRuntimeView(context: vscode.ExtensionContext, webvi
     });
   }
 
-  function showJavaRuntimeEntries(entries: {
-    javaRuntimes: JavaRuntimeEntry[];
-    projectRuntimes: ProjectRuntimeEntry[];
-  }) {
+  function showJavaRuntimeEntries(args: any) {
     webviewPanel.webview.postMessage({
       command: "showJavaRuntimeEntries",
-      entries: entries,
+      args: args,
     });
   }
 
@@ -124,32 +154,44 @@ export async function validateJavaRuntime() {
       }
     }
   } catch (error) {
+    console.log(error);
   }
   return false;
 }
 
 export async function findJavaRuntimeEntries(): Promise<{
-  javaRuntimes: JavaRuntimeEntry[],
-  projectRuntimes: ProjectRuntimeEntry[]
+  javaRuntimes?: JavaRuntimeEntry[],
+  projectRuntimes?: ProjectRuntimeEntry[],
+  javaDotHome?: string;
+  javaHomeError?: string;
 }> {
   if (!javaHomes) {
     javaHomes = await findJavaHomes();
   }
-  const entries = javaHomes;
-  const javaHomeForLS = await checkJavaRuntime();
-
-  const projectRuntimes = await getProjectRuntimes();
-  const javaRuntimeEntries = entries.map(elem => ({
+  const javaRuntimes = javaHomes.map(elem => ({
     name: "name",
     path: elem.home,
     version: elem.version,
     type: elem.sources.join(","),
-    usedByLS: isSamePath(elem.home, javaHomeForLS),
   })).sort((a, b) => b.version - a.version);
-  return {
-    javaRuntimes: javaRuntimeEntries,
-    projectRuntimes: projectRuntimes
-  };
+
+  try {
+    const javaDotHome = await checkJavaRuntime();
+    const projectRuntimes = await getProjectRuntimes(); // TODO: after setting correct java.home, this line is error: 'command 'java.execute.workspaceCommand' not found'
+    return {
+      javaRuntimes: javaRuntimes,
+      projectRuntimes: projectRuntimes,
+      javaDotHome: javaDotHome
+    };
+  } catch (error) {
+    return {
+      javaRuntimes: javaRuntimes,
+      javaHomeError: error.message
+    };
+  }
+
+
+
 }
 
 async function getProjectRuntimes(): Promise<ProjectRuntimeEntry[]> {

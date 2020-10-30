@@ -38,10 +38,11 @@ $card-border-color: var(--vscode-sideBar-border);
 $input-group-addon-bg: var(--vscode-sideBar-background);
 $input-group-addon-color: var(--vscode-sideBarTitle-foreground);
 
+$code-color: var(--vscode-textPreformat-foreground);
+
 @import "~bootstrap/scss/bootstrap";
 
 .custom-select {
   color: var(--vscode-sideBarTitle-foreground);
   background-color: var(--vscode-sideBar-background);
-  -webkit-appearance: auto;
 }

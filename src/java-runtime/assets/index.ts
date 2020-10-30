@@ -11,24 +11,29 @@ import * as React from "react";
 import { ProjectRuntimePanel } from "./projectRuntimePanel";
 import { JdkInstallationPanel } from "./jdk.installation";
 import { ConfigureLSPanel } from "./jdk.ls";
+import { requestJdkInfo } from "./vscode.api";
+import * as $ from "jquery";
 
 window.addEventListener("message", event => {
   if (event.data.command === "applyJdkInfo") {
     applyJdkInfo(event.data.jdkInfo);
   } else if (event.data.command === "showJavaRuntimeEntries") {
     console.log(event);
-    showJavaRuntimeEntries(event.data.entries);
+    showJavaRuntimeEntries(event.data.args);
   }
 });
 
 let jdkEntries: JavaRuntimeEntry[];
 let projectRuntimes: ProjectRuntimeEntry[];
-function showJavaRuntimeEntries(entries: {
-  javaRuntimes: JavaRuntimeEntry[];
-  projectRuntimes: ProjectRuntimeEntry[];
+let javaHomeError: any;
+function showJavaRuntimeEntries(args: {
+  javaRuntimes?: JavaRuntimeEntry[];
+  projectRuntimes?: ProjectRuntimeEntry[];
+  javaHomeError?: string
 }) {
-  jdkEntries = entries.javaRuntimes;
-  projectRuntimes = entries.projectRuntimes;
+  jdkEntries = args.javaRuntimes;
+  projectRuntimes = args.projectRuntimes;
+  javaHomeError = args.javaHomeError;
   render();
 }
 
@@ -51,45 +56,22 @@ function applyJdkInfo(jdkInfo: any) {
 }
 
 function render() {
-  const props: JdkAcquisitionPanelProps = {
+  const props = {
     jdkEntries: jdkEntries,
     projectRuntimes: projectRuntimes,
     jdkData: jdkData,
-    onRequestJdk: requestJdkInfo
+    onRequestJdk: requestJdkInfo,
+    javaHomeError
   };
 
   ReactDOM.render(React.createElement(JdkAcquisitionPanel, props), document.getElementById("jdkAcquisitionPanel"));
   ReactDOM.render(React.createElement(ProjectRuntimePanel, props), document.getElementById("projectRuntimePanel"));
   ReactDOM.render(React.createElement(ConfigureLSPanel, props), document.getElementById("configureLsPanel"));
   ReactDOM.render(React.createElement(JdkInstallationPanel, {data: jdkData, onRequestJdk: requestJdkInfo}, null ), document.getElementById("jdkInstallationPanel"));
+  if (javaHomeError) {
+    ($("#configure-ls-tab") as any).tab("show");
+  }
 }
-
 
 render();
 
-declare function acquireVsCodeApi(): any;
-const vscode = acquireVsCodeApi();
-
-function requestJdkInfo(jdkVersion: string, jvmImpl: string) {
-  vscode.postMessage({
-    command: "requestJdkInfo",
-    jdkVersion: jdkVersion,
-    jvmImpl: jvmImpl
-  });
-}
-
-export function udpateJavaHome(entry: JavaRuntimeEntry) {
-  entry.usedByLS = true;
-  vscode.postMessage({
-    command: "updateJavaHome",
-    javaHome: entry.path
-  });
-}
-
-export function updateRuntimePath(sourceLevel: string, runtimePath: string) {
-  vscode.postMessage({
-    command: "updateRuntimePath",
-    sourceLevel,
-    runtimePath
-  });
-}

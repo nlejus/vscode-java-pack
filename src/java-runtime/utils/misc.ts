@@ -9,7 +9,11 @@ export function sourceLevelDisplayName(ver: string | number) {
     return "J2SE-1.5";
   }
 
-  return `JavaSE-${ver}`;
+  if (typeof ver === "number") {
+    return ver <= 8 ? `JavaSE-1.${ver}` : `JavaSE-${ver}`;
+  } else {
+    return `JavaSE-${ver}`;
+  }
 }
 
 export function sourceLevelMajorVersion(level: string): number {

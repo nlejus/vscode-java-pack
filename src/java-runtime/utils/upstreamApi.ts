@@ -58,5 +58,5 @@ function checkJavaPreferences(){
 }
 
 function invalidJavaHome(reject: any, reason: string) {
-    throw new Error(reason);
+    reject(new Error(reason));
 }

@@ -4,7 +4,6 @@
 import * as React from "react";
 import { JavaRuntimeEntry, ProjectRuntimeEntry } from "../types";
 import * as _ from "lodash";
-import { udpateJavaHome, updateRuntimePath } from ".";
 
 const MIN_JDK_VERSION: number = 11;
 
@@ -65,18 +64,11 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
           {!entry.path && <em>{"<Empty>"}</em>}
           {entry.path}
           &nbsp;
-          {/* {index === currentIndex && <span className={badgeClasses.join(" ")}>Current</span>} */}
-          {/* {entry.path && !entry.isValid && <span className="badge badge-pill badge-secondary" title={entry.hint}>Invalid</span>} */}
           {entry.path && entry.hint && <div><em className={errorIndex === index ? "text-danger" : "text-warning"}>{entry.hint}</em></div>}
         </td>
         <td>
           {entry.version}
         </td>
-        {/* <td>
-          {entry.usedByLS && <span className={badgeClasses.join(" ")}>In Use</span>}
-          {!entry.usedByLS && entry.version && entry.version >= MIN_JDK_VERSION && <a href="#" onClick={()=>udpateJavaHome(entry)} >Use</a>}
-          {!entry.usedByLS && entry.version && entry.version < MIN_JDK_VERSION && <span>-</span>}
-        </td> */}
       </tr>
     );
   });

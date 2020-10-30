@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as path from "path";
 import * as React from "react";
-import { JavaRuntimeEntry, ProjectRuntimeEntry } from "../types";
+import { JavaRuntimeEntry, JDKEntry, ProjectRuntimeEntry } from "../types";
 import { InvisibleProjectsRuntimePanel } from "./sourcelevel.invisible";
 import { SourceLevelRuntimePanel } from "./sourcelevel.managed";
 
@@ -11,50 +11,41 @@ export const ProjectRuntimePanel = (props: {
 }) => {
   const { jdkEntries, projectRuntimes } = props;
   console.log(props);
-  const invisibleProjectEntry = {
-    sourcelevel: "JavaSE-1.8",
-    runtimePath: "fakepath",
-    projects: [
-      { name: "invisible_1", rootPath: "path1" },
-      { name: "invisible_2", rootPath: "path2" },
-    ]
-  };
 
-  const sourceLevelEntries = projectRuntimes && _.uniqBy(projectRuntimes.map(p => ({ sourceLevel: p.sourceLevel, runtimePath: p.runtimePath })), "sourceLevel");
-  console.log(sourceLevelEntries);
-  // const sourceLevelEntries = [{
-  //   sourcelevel: "JavaSE-1.8",
-  //   runtimePath: "fakepath",
-  //   projects: [
-  //     { name: "Maven-1.8", rootPath: "path1" },
-  //     { name: "Gradle-1.8", rootPath: "path2" },
-  //   ]
-  // },
-  // {
-  //   sourcelevel: "JavaSE-11",
-  //   runtimePath: "fakepath",
-  //   projects: [
-  //     { name: "Maven-11", rootPath: "path1" },
-  //     { name: "Gradle-11", rootPath: "path2" },
-  //   ]
-  // }];
+  let sourceLevelRuntimePanels;
+  let invisibleProjectsRuntimePanel;
+  if (projectRuntimes && jdkEntries) {
+    const sourceLevelEntries = _.uniqBy(projectRuntimes.map(p => ({ sourceLevel: p.sourceLevel, runtimePath: p.runtimePath })), "sourceLevel");
+    const jdks: JDKEntry[] = jdkEntries.map(e => ({
+      name: e.path,
+      fspath: e.path,
+      majorVersion: e.version,
+      version: e.version.toString()
+    }));
 
-  const jdks = jdkEntries.map(e => ({
-    name: path.basename(e.path),
-    fspath: e.path,
-    majorVersion: e.version,
-    version: e.version
-  }));
+    const invisibleProject = projectRuntimes.find(p => p.rootPath.endsWith("jdt.ls-java-project") || p.rootPath.endsWith("jdt.ls-java-project/"));
+    const defaultJDK = invisibleProject ? invisibleProject.runtimePath : undefined;
 
-  const invisibleProject = projectRuntimes.find(p => p.rootPath.endsWith("jdt.ls-java-project") || p.rootPath.endsWith("jdt.ls-java-project/"));
-  const defaultSourceLevel = invisibleProject && invisibleProject.sourceLevel;
+    sourceLevelRuntimePanels = sourceLevelEntries.map(entry => (<SourceLevelRuntimePanel entry={entry} jdks={jdks} key={entry.sourceLevel} />));
+    invisibleProjectsRuntimePanel = (<InvisibleProjectsRuntimePanel jdks={jdks} defaultJDK={defaultJDK} />);
+  } else {
+    // loading
+    sourceLevelRuntimePanels = invisibleProjectsRuntimePanel = (
+      <div className="spinner-border spinner-border-sm" role="status">
+        <span className="sr-only">Loading...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="col">
       <div className="row mb-3">
-        <div className="col">
+        <div className="col-6">
           <h3 className="font-weight-light">Maven/Gradle Projects</h3>
+          <p>Java version is managed by build tools. Java versions detected in your projects are listed below, you can select corresponding JDK for each version.</p>
+          {sourceLevelRuntimePanels}
           <p>
-            You can specify Java version for Maven/Gradle projects. For example,
+            To use a different Java version for your projects, please specify it in build scripts. For example, if you want to use Java 8, add below lines
           </p>
           <p>In <code>pom.xml</code> of a Maven project:</p>
           <blockquote>
@@ -73,19 +64,16 @@ export const ProjectRuntimePanel = (props: {
               <span>targetCompatibility = 1.8</span><br />
             </code>
           </blockquote>
-
-          <p>Below, you can specify which JDK to use for corresponding Java versions.</p>
-          {sourceLevelEntries.map(entry => (<SourceLevelRuntimePanel entry={entry} jdks={jdks} />))}
         </div>
 
-        <div className="col">
-          <h3 className="font-weight-light">Projects without build tools</h3>
+        <div className="col-6">
+          <h3 className="font-weight-light">Folders without build tools</h3>
           <p>
-            For .java files not managed by build tools like Maven/Gradle, a default SDK is used.
+            For folders containing .java files, but not managed by build tools like Maven/Gradle, a default JDK is used.
           </p>
-          <InvisibleProjectsRuntimePanel jdks={jdks} defaultSourceLevel={defaultSourceLevel} />
+          {invisibleProjectsRuntimePanel}
         </div>
       </div>
     </div>
   );
-}
+};

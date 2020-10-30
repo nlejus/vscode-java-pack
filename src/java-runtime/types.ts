@@ -6,7 +6,6 @@ export interface JavaRuntimeEntry {
   path: string | undefined;
   type: string;
   version?: number;
-  usedByLS?: boolean;
   actionUri?: string;
   isValid?: boolean;
   hint?: string;
