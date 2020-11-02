@@ -52,7 +52,7 @@ async function initializeJavaRuntimeView(context: vscode.ExtensionContext, webvi
       }
       case "updateJavaHome": {
         const { javaHome } = e;
-        await vscode.workspace.getConfiguration("java").update("home", javaHome);
+        await vscode.workspace.getConfiguration("java").update("home", javaHome, vscode.ConfigurationTarget.Global);
         findJavaRuntimeEntries().then(data => {
           showJavaRuntimeEntries(data);
         });
