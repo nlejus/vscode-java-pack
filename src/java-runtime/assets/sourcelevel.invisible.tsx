@@ -21,7 +21,7 @@ export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
                 <div className="input-group-prepend">
                   <label className="input-group-text" htmlFor="invisible">Default JDK:</label>
                 </div>
-                <select className="custom-select" id="invisible" defaultValue={defaultJDK} onChange={this.onSelectionChange}>
+                <select className="form-control" id="invisible" defaultValue={defaultJDK} onChange={this.onSelectionChange}>
                   { defaultJDK === undefined && <option key="placeholder" hidden disabled selected>-- Select --</option> }
                   {jdks.map(jdk => (
                     <option key={jdk.name} value={jdk.fspath} >{jdk.name}</option>

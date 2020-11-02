@@ -47,7 +47,7 @@ export class ConfigureLSPanel extends React.Component<ConfigureLSPanelProps, Con
               <div className="input-group-prepend">
                 <label className="input-group-text" htmlFor="ls">JDK for Language Server:</label>
               </div>
-              <select className="custom-select" id="ls" onChange={this.onSelectionChange} defaultValue={javaDotHome}>
+              <select className="form-control" id="ls" onChange={this.onSelectionChange} defaultValue={javaDotHome}>
                 {javaHomeError && <option key="placeholder" hidden disabled selected>-- Select --</option>}
                 {jdks.filter(jdk => jdk.majorVersion !== undefined && jdk.majorVersion >= 11).map(jdk => (
                   <option key={jdk.fspath} value={jdk.fspath}>{jdk.fspath}</option>

@@ -40,9 +40,7 @@ $input-group-addon-color: var(--vscode-sideBarTitle-foreground);
 
 $code-color: var(--vscode-textPreformat-foreground);
 
+$input-color:var(--vscode-sideBarTitle-foreground);
+$input-bg:var(--vscode-sideBar-background);
 @import "~bootstrap/scss/bootstrap";
 
-.custom-select {
-  color: var(--vscode-sideBarTitle-foreground);
-  background-color: var(--vscode-sideBar-background);
-}
