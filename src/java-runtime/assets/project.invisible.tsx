@@ -1,14 +1,16 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as React from "react";
-import * as _ from "lodash";
 import { JavaRuntimeEntry } from "../types";
 import { setDefaultRuntime } from "./vscode.api";
 
-interface Props {
+interface InvisibleProjectsRuntimePanelProps {
   jdks: JavaRuntimeEntry[];
   defaultJDK?: string;
 }
 
-export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
+export class InvisibleProjectsRuntimePanel extends React.Component<InvisibleProjectsRuntimePanelProps, {}> {
   render = () => {
     const { jdks, defaultJDK } = this.props;
     console.log(this.props);

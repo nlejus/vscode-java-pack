@@ -22,9 +22,3 @@ export interface ProjectRuntimeEntry {
   runtimePath: string;
   sourceLevel: string;
 }
-
-export interface RuntimeEntry {
-  sourceLevel: string;
-  runtimePath: string;
-  projects?: { name: string, rootPath: string }[];
-}

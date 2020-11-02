@@ -1,5 +1,8 @@
-import { JavaRuntimeEntry } from "../types";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as React from "react";
+import { JavaRuntimeEntry } from "../types";
 import { udpateJavaHome } from "./vscode.api";
 
 export interface ConfigureLSPanelProps {

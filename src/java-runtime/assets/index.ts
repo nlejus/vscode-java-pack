@@ -6,11 +6,11 @@ import "bootstrap/js/src/tab";
 import bytes = require("bytes");
 import * as ReactDOM from "react-dom";
 import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
-import { JdkAcquisitionPanel } from "./jdk.acquisition";
+import { InstalledJDKPanel } from "./jdk.configure.installed";
 import * as React from "react";
-import { ProjectRuntimePanel } from "./projectRuntimePanel";
+import { ProjectRuntimePanel } from "./jdk.configure.project";
 import { JdkInstallationPanel } from "./jdk.installation";
-import { ConfigureLSPanel } from "./jdk.ls";
+import { ConfigureLSPanel } from "./jdk.configure.ls";
 import { requestJdkInfo } from "./vscode.api";
 import * as $ from "jquery";
 
@@ -69,7 +69,7 @@ function render() {
   }
 
   ReactDOM.render(React.createElement(ConfigureLSPanel, props), document.getElementById("configureLsPanel"));
-  ReactDOM.render(React.createElement(JdkAcquisitionPanel, props), document.getElementById("jdkAcquisitionPanel"));
+  ReactDOM.render(React.createElement(InstalledJDKPanel, props), document.getElementById("jdkAcquisitionPanel"));
   ReactDOM.render(React.createElement(ProjectRuntimePanel, props), document.getElementById("projectRuntimePanel"));
   ReactDOM.render(React.createElement(JdkInstallationPanel, { data: jdkData, onRequestJdk: requestJdkInfo }, null), document.getElementById("jdkInstallationPanel"));
 

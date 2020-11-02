@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as _ from "lodash";
 import * as React from "react";
 import { JdkData } from "../types";
-import * as _ from "lodash";
 
 export type JdkRquestHandler = (jdkVersion: string, jvmImpl: string) => void;
 

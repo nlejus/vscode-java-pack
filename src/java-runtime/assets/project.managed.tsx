@@ -1,14 +1,20 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as React from "react";
-import { JavaRuntimeEntry, RuntimeEntry } from "../types";
+import { JavaRuntimeEntry } from "../types";
 import { sourceLevelDisplayName, sourceLevelMajorVersion } from "../utils/misc";
 import { updateRuntimePath } from "./vscode.api";
 
-interface Props {
-  entry: RuntimeEntry;
+interface ManagedProjectRuntimePanelProps {
+  entry: {
+    sourceLevel: string;
+    runtimePath: string;
+  };
   jdks: JavaRuntimeEntry[];
 }
 
-export class SourceLevelRuntimePanel extends React.Component<Props, {}> {
+export class ManagedProjectRuntimePanel extends React.Component<ManagedProjectRuntimePanelProps, {}> {
 
   render = () => {
     const { sourceLevel, runtimePath } = this.props.entry;

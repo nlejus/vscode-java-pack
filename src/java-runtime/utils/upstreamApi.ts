@@ -1,3 +1,8 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+// based on https://github.com/redhat-developer/vscode-java/blob/fcbe9204638610ce773cedaef445f19032a785cb/src/requirements.ts
+
 import * as fse from "fs-extra";
 import * as path from "path";
 import * as vscode from "vscode";

@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 import * as React from "react";
 import { JavaRuntimeEntry, ProjectRuntimeEntry } from "../types";
-import { InvisibleProjectsRuntimePanel } from "./sourcelevel.invisible";
-import { SourceLevelRuntimePanel } from "./sourcelevel.managed";
+import { InvisibleProjectsRuntimePanel } from "./project.invisible";
+import { ManagedProjectRuntimePanel } from "./project.managed";
 
 export const ProjectRuntimePanel = (props: {
   jdkEntries?: JavaRuntimeEntry[];
@@ -18,7 +18,7 @@ export const ProjectRuntimePanel = (props: {
     const invisibleProject = projectRuntimes.find(p => p.rootPath.endsWith("jdt.ls-java-project") || p.rootPath.endsWith("jdt.ls-java-project/"));
     const defaultJDK = invisibleProject ? invisibleProject.runtimePath : undefined;
 
-    sourceLevelRuntimePanels = sourceLevelEntries.map(entry => (<SourceLevelRuntimePanel entry={entry} jdks={jdkEntries} key={entry.sourceLevel} />));
+    sourceLevelRuntimePanels = sourceLevelEntries.map(entry => (<ManagedProjectRuntimePanel entry={entry} jdks={jdkEntries} key={entry.sourceLevel} />));
     invisibleProjectsRuntimePanel = (<InvisibleProjectsRuntimePanel jdks={jdkEntries} defaultJDK={defaultJDK} />);
   } else {
     // loading
