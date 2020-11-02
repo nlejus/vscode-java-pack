@@ -5,11 +5,9 @@ import * as React from "react";
 import { JavaRuntimeEntry, ProjectRuntimeEntry } from "../types";
 import * as _ from "lodash";
 
-const MIN_JDK_VERSION: number = 11;
-
 export interface JavaRuntimeEntryPanelProps {
-  data: JavaRuntimeEntry[];
-  projectRuntimes: ProjectRuntimeEntry[];
+  data?: JavaRuntimeEntry[];
+  projectRuntimes?: ProjectRuntimeEntry[];
 }
 
 interface RuntimeEntry {
@@ -42,55 +40,29 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
       });
     }
   }
-  const currentIndex = entryData.findIndex(entry => !!entry.path);
-  let errorIndex = -1;
-  if (currentIndex !== -1 && !entryData[currentIndex].isValid) {
-    errorIndex = currentIndex;
-  }
 
   const entries = entryData.map((entry, index) => {
-    let badgeClasses = ["badge", "badge-pill"];
-    let projectBadgeClasses = ["badge", "badge-pill", "badge-success"];
-    if (!entry.version || entry.version < MIN_JDK_VERSION) {
-      badgeClasses.push("badge-danger");
-    } else {
-      badgeClasses.push("badge-success");
-    }
-    const projectRuntimeBadgeClasses = ["badge", "badge-pill", "badge-success"];
     return (
       <tr key={index}>
         <th scope="row">{index + 1}</th>
         <td>
-          {!entry.path && <em>{"<Empty>"}</em>}
-          {entry.path}
-          &nbsp;
-          {entry.path && entry.hint && <div><em className={errorIndex === index ? "text-danger" : "text-warning"}>{entry.hint}</em></div>}
+          {entry.fspath}
         </td>
         <td>
-          {entry.version}
+          {entry.majorVersion}
         </td>
       </tr>
     );
   });
 
-  const hasValidJdk = _.some(entryData, entry => entry.version && entry.version >= MIN_JDK_VERSION);
-  let message = ``;
-  if (!hasValidJdk) {
-    message = "⚠️ No JDK installation was detected. Please follow the links below to download and install one.";
-  }
-
   return (
     <div className="table-responsive">
       <table className="table table-borderless table-hover table-sm mb-0">
-        {/* <caption className="pb-0">
-          {message ? message : <div>If you change any of the entries above, you need to <a href="command:workbench.action.reloadWindow">reload</a> VS Code to make them effective.</div>}
-        </caption> */}
         <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Path</th>
             <th scope="col">Version</th>
-            {/* <th scope="col">LanguageServer</th> */}
           </tr>
         </thead>
         <tbody>
@@ -100,35 +72,3 @@ export const JavaRuntimeEntryPanel = (props: JavaRuntimeEntryPanelProps | undefi
     </div>
   );
 };
-
-function sourceLevelDisplayName(ver: string) {
-  if (!ver) {
-    return "";
-  }
-
-  if (ver === "1.5") {
-    return "J2SE-1.5";
-  }
-
-  return `JavaSE-${ver}`;
-}
-
-
-function getMajorVersion(version: string) {
-  if (!version) {
-    return 0;
-  }
-  // Ignore "1." prefix for legacy Java versions
-  if (version.startsWith("1.")) {
-    version = version.substring(2);
-  }
-
-  // look into the interesting bits now
-  const regexp = /\d+/g;
-  const match = regexp.exec(version);
-  let javaVersion = 0;
-  if (match) {
-    javaVersion = parseInt(match[0], 10);
-  }
-  return javaVersion;
-}

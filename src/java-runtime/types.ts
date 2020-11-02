@@ -3,12 +3,9 @@
 
 export interface JavaRuntimeEntry {
   name: string;
-  path: string | undefined;
+  fspath: string;
   type: string;
-  version?: number;
-  actionUri?: string;
-  isValid?: boolean;
-  hint?: string;
+  majorVersion: number;
 }
 
 export interface JdkData {
@@ -30,11 +27,4 @@ export interface RuntimeEntry {
   sourceLevel: string;
   runtimePath: string;
   projects?: { name: string, rootPath: string }[];
-}
-
-export interface JDKEntry {
-  name: string;
-  fspath: string;
-  version: string;
-  majorVersion: number;
 }

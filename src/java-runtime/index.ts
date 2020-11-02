@@ -154,8 +154,8 @@ export async function validateJavaRuntime() {
       }
     }
   } catch (error) {
-    console.log(error);
   }
+
   return false;
 }
 
@@ -168,37 +168,41 @@ export async function findJavaRuntimeEntries(): Promise<{
   if (!javaHomes) {
     javaHomes = await findJavaHomes();
   }
-  const javaRuntimes = javaHomes.map(elem => ({
-    name: "name",
-    path: elem.home,
-    version: elem.version,
+  const javaRuntimes: JavaRuntimeEntry[] = javaHomes.map(elem => ({
+    name: elem.home,
+    fspath: elem.home,
+    majorVersion: elem.version,
     type: elem.sources.join(","),
-  })).sort((a, b) => b.version - a.version);
+  })).sort((a, b) => b.majorVersion - a.majorVersion);
 
+  let javaDotHome;
+  let javaHomeError;
   try {
-    const javaDotHome = await checkJavaRuntime();
-    const projectRuntimes = await getProjectRuntimes(); // TODO: after setting correct java.home, this line is error: 'command 'java.execute.workspaceCommand' not found'
-    return {
-      javaRuntimes: javaRuntimes,
-      projectRuntimes: projectRuntimes,
-      javaDotHome: javaDotHome
-    };
+    javaDotHome = await checkJavaRuntime();
   } catch (error) {
-    return {
-      javaRuntimes: javaRuntimes,
-      javaHomeError: error.message
-    };
+    javaHomeError = error.message;
   }
 
-
-
+  const projectRuntimes = await getProjectRuntimes();
+  return {
+    javaRuntimes,
+    projectRuntimes,
+    javaDotHome,
+    javaHomeError
+  };
 }
 
 async function getProjectRuntimes(): Promise<ProjectRuntimeEntry[]> {
   const ret: ProjectRuntimeEntry[] = [];
   const javaExt = vscode.extensions.getExtension("redhat.java");
   if (javaExt && javaExt.isActive) {
-    const projects: string[] = await vscode.commands.executeCommand("java.execute.workspaceCommand", "java.project.getAll") || [];
+    let projects: string[] = [];
+    try {
+       projects = await vscode.commands.executeCommand("java.execute.workspaceCommand", "java.project.getAll") || [];
+    } catch (error) {
+      // LS not ready
+    }
+
     const SOURCE_LEVEL_KEY = "org.eclipse.jdt.core.compiler.source";
     const VM_INSTALL_PATH = "org.eclipse.jdt.ls.core.vm.location";
     for (const projectRoot of projects) {

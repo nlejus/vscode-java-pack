@@ -40,3 +40,23 @@ export function sourceLevelMajorVersion(level: string): number {
 export function isSamePath(a: string, b: string): boolean {
   return !!(a && b) && path.relative(a, b) === "";
 }
+
+
+export function getMajorVersion(version: string) {
+  if (!version) {
+    return 0;
+  }
+  // Ignore "1." prefix for legacy Java versions
+  if (version.startsWith("1.")) {
+    version = version.substring(2);
+  }
+
+  // look into the interesting bits now
+  const regexp = /\d+/g;
+  const match = regexp.exec(version);
+  let javaVersion = 0;
+  if (match) {
+    javaVersion = parseInt(match[0], 10);
+  }
+  return javaVersion;
+}

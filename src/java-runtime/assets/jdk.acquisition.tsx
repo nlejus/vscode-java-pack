@@ -3,12 +3,12 @@
 
 import * as React from "react";
 import { JavaRuntimeEntryPanel } from "./jdk.entries";
-import { JdkInstallationPanel, JdkRquestHandler } from "./jdk.installation";
+import { JdkRquestHandler } from "./jdk.installation";
 import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
 
 export interface JdkAcquisitionPanelProps {
-  jdkEntries: JavaRuntimeEntry[];
-  projectRuntimes: ProjectRuntimeEntry[];
+  jdkEntries?: JavaRuntimeEntry[];
+  projectRuntimes?: ProjectRuntimeEntry[];
   jdkData: JdkData;
   onRequestJdk: JdkRquestHandler;
 }

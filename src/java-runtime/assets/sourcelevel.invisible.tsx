@@ -1,18 +1,17 @@
 import * as React from "react";
 import * as _ from "lodash";
-import { JDKEntry, RuntimeEntry } from "../types";
+import { JavaRuntimeEntry } from "../types";
 import { setDefaultRuntime } from "./vscode.api";
 
 interface Props {
-  jdks: JDKEntry[];
-  defaultJDK: string;
+  jdks: JavaRuntimeEntry[];
+  defaultJDK?: string;
 }
 
 export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
-  render() {
+  render = () => {
     const { jdks, defaultJDK } = this.props;
     console.log(this.props);
-    const change = this.change;
     return (
       <div className="row">
         <div className="col">
@@ -22,8 +21,8 @@ export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
                 <div className="input-group-prepend">
                   <label className="input-group-text" htmlFor="invisible">Default JDK:</label>
                 </div>
-                <select className="custom-select" id="invisible" defaultValue={defaultJDK} onChange={change}>
-                  <option key="placeholder" hidden disabled>-- Select --</option>
+                <select className="custom-select" id="invisible" defaultValue={defaultJDK} onChange={this.onSelectionChange}>
+                  { defaultJDK === undefined && <option key="placeholder" hidden disabled selected>-- Select --</option> }
                   {jdks.map(jdk => (
                     <option key={jdk.name} value={jdk.fspath} >{jdk.name}</option>
                   ))}
@@ -36,14 +35,11 @@ export class InvisibleProjectsRuntimePanel extends React.Component<Props, {}> {
     );
   }
 
-  change = (event) => {
+  onSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
     const targetJdk = this.props.jdks.find(jdk => jdk.fspath === value);
-    setDefaultRuntime(targetJdk.fspath, targetJdk.majorVersion);
+    if (targetJdk) {
+      setDefaultRuntime(targetJdk.fspath, targetJdk.majorVersion);
+    }
   }
 }
-
-// function change(event) {
-//   const { value } = event.target;
-//   setDefaultRuntime(value);
-// }

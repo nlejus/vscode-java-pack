@@ -6,7 +6,7 @@ import "bootstrap/js/src/tab";
 import bytes = require("bytes");
 import * as ReactDOM from "react-dom";
 import { JavaRuntimeEntry, JdkData, ProjectRuntimeEntry } from "../types";
-import { JdkAcquisitionPanel, JdkAcquisitionPanelProps } from "./jdk.acquisition";
+import { JdkAcquisitionPanel } from "./jdk.acquisition";
 import * as React from "react";
 import { ProjectRuntimePanel } from "./projectRuntimePanel";
 import { JdkInstallationPanel } from "./jdk.installation";
@@ -23,8 +23,8 @@ window.addEventListener("message", event => {
   }
 });
 
-let jdkEntries: JavaRuntimeEntry[];
-let projectRuntimes: ProjectRuntimeEntry[];
+let jdkEntries: JavaRuntimeEntry[] | undefined;
+let projectRuntimes: ProjectRuntimeEntry[] | undefined;
 let javaHomeError: any;
 function showJavaRuntimeEntries(args: {
   javaRuntimes?: JavaRuntimeEntry[];
@@ -64,13 +64,19 @@ function render() {
     javaHomeError
   };
 
-  ReactDOM.render(React.createElement(JdkAcquisitionPanel, props), document.getElementById("jdkAcquisitionPanel"));
-  ReactDOM.render(React.createElement(ProjectRuntimePanel, props), document.getElementById("projectRuntimePanel"));
-  ReactDOM.render(React.createElement(ConfigureLSPanel, props), document.getElementById("configureLsPanel"));
-  ReactDOM.render(React.createElement(JdkInstallationPanel, {data: jdkData, onRequestJdk: requestJdkInfo}, null ), document.getElementById("jdkInstallationPanel"));
   if (javaHomeError) {
     ($("#configure-ls-tab") as any).tab("show");
   }
+
+  ReactDOM.render(React.createElement(ConfigureLSPanel, props), document.getElementById("configureLsPanel"));
+  ReactDOM.render(React.createElement(JdkAcquisitionPanel, props), document.getElementById("jdkAcquisitionPanel"));
+  ReactDOM.render(React.createElement(ProjectRuntimePanel, props), document.getElementById("projectRuntimePanel"));
+  ReactDOM.render(React.createElement(JdkInstallationPanel, { data: jdkData, onRequestJdk: requestJdkInfo }, null), document.getElementById("jdkInstallationPanel"));
+
+  $("a.navigation").click(e => {
+    ($($(e.target).attr("href") || "") as any).tab("show");
+  });
+
 }
 
 render();
