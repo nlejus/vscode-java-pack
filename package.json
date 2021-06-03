@@ -358,6 +358,7 @@
   ],
   "dependencies": {
     "@types/fs-extra": "^9.0.1",
+    "applicationinsights": "^2.0.0",
     "compare-versions": "^3.6.0",
     "expand-home-dir": "0.0.3",
     "fs-extra": "^9.0.1",
